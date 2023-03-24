@@ -1,18 +1,20 @@
-name: Docker Image CI
+FROM python:3.8-slim
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+ENV PYTHONFAULTHANDLER=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONHASHSEED=random
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PIP_NO_CACHE_DIR=off
+ENV PIP_DISABLE_PIP_VERSION_CHECK=on
+ENV PIP_DEFAULT_TIMEOUT=100
 
-jobs:
+RUN apt-get update
+RUN apt-get install -y python3 python3-pip python-dev build-essential python3-venv ffmpeg
 
-  build:
+RUN mkdir -p /code
+ADD . /code
+WORKDIR /code
 
-    runs-on: ubuntu-latest
+RUN pip3 install -r requirements.txt
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+CMD ["bash"]
